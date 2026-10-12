@@ -1,0 +1,132 @@
+{
+  "info": {
+    "_postman_id": "280bc1c6-548d-4e80-97fb-7253497a87cc",
+    "name": "Cars",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "55110648",
+    "_collection_link": "https://go.postman.co/collection/55110648-280bc1c6-548d-4e80-97fb-7253497a87cc?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Get cars",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/cars",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "cars"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get car by id",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/cars/{{carId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "cars",
+            "{{carId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Delete car",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/cars/{{carId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "cars",
+            "{{carId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Create car",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"id\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\n  \"brand\": \"Skoda\",\n  \"model\": \"Fabia Mk1\",\n  \"doorsNumber\": 4,\n  \"luggageCapacity\": 1999,\n  \"engineCapacity\": 1200,\n  \"fuelType\": 0,\n  \"productionDate\": \"2004-06-12T00:00:00.000Z\",\n  \"averageFuelConsumption\": 6.5,\n  \"bodyType\": 1\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/cars",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "cars"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Edit car",
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"id\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\n  \"brand\": \"Skoda\",\n  \"model\": \"Fabia Mk1\",\n  \"doorsNumber\": 4,\n  \"luggageCapacity\": 1999,\n  \"engineCapacity\": 1200,\n  \"fuelType\": 0,\n  \"productionDate\": \"2004-06-12T00:00:00.000Z\",\n  \"averageFuelConsumption\": 6.5,\n  \"bodyType\": 1\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/cars/{{carId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "cars",
+            "{{carId}}"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5121"
+    },
+    {
+      "key": "carId",
+      "value": ""
+    }
+  ]
+}
