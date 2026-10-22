@@ -1,4 +1,9 @@
+using Cars.API.Middleware;
+using Cars.Application.Cars;
+using Cars.Application.Common.Behaviors;
 using Cars.Infrastructure;
+using FluentValidation;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -26,6 +31,17 @@ builder.Services.AddDbContext<DataContext>(b =>
     b.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
+builder.Services.AddMediatR(cfg =>
+{
+    cfg.RegisterServicesFromAssembly(typeof(GetCarsList.Handler).Assembly);
+});
+
+builder.Services.AddValidatorsFromAssemblyContaining<Create.CommandValidator>();
+
+builder.Services.AddTransient(
+    typeof(IPipelineBehavior<,>),
+    typeof(ValidationBehavior<,>));
+
 var app = builder.Build();
 
 app.UseCors();
@@ -41,6 +57,7 @@ app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
+app.UseMiddleware<ApiExceptionMiddleware>();
 app.MapControllers();
 
 using var scope = app.Services.CreateScope();
@@ -51,4 +68,3 @@ await context.Database.MigrateAsync();
 await Seed.SeedData(context);
 
 app.Run();
-
