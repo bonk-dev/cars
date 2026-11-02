@@ -1,0 +1,75 @@
+body {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 1rem;
+  font-family: sans-serif;
+}
+
+header {
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+/* Tylko układ – przyciski i linki w jednym rzędzie, wyrównane i z odstępem */
+nav,
+.page-header,
+.actions,
+.car-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.page-header,
+.car-item {
+  justify-content: space-between;
+}
+
+.car-list {
+  list-style: none;
+  padding: 0;
+}
+
+.car-item {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #eee;
+}
+
+/* Linki z klasą btn wyglądają tak samo jak <button> */
+.btn {
+  padding: 0.3rem 0.7rem;
+  border: 1px solid #999;
+  border-radius: 4px;
+  background: #f0f0f0;
+  color: #000;
+  font: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background: #e0e0e0;
+}
+
+.btn.danger {
+  color: #b00;
+}
+
+/* Każde pole formularza w osobnej linii */
+.car-form label {
+  display: block;
+  margin-bottom: 0.75rem;
+}
+
+.car-form input,
+.car-form select {
+  display: block;
+  margin-top: 0.2rem;
+  padding: 0.3rem;
+}
+
+.error {
+  color: #b00;
+}
