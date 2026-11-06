@@ -4,21 +4,19 @@ export interface Option {
 }
 
 export const fuelTypes: Option[] = [
-  { value: 1, label: 'Benzyna' },
-  { value: 2, label: 'Diesel' },
-  { value: 3, label: 'LPG' },
-  { value: 4, label: 'Hybryda' },
-  { value: 5, label: 'Elektryczny' },
+  { value: 0, label: 'Benzyna' },
+  { value: 1, label: 'Diesel' },
+  { value: 2, label: 'Hybryda' },
+  { value: 3, label: 'Elektryczny' },
+  { value: 4, label: 'LPG' },
 ];
 
 export const bodyTypes: Option[] = [
-  { value: 1, label: 'Hatchback' },
-  { value: 2, label: 'Sedan' },
-  { value: 3, label: 'Kombi' },
-  { value: 4, label: 'SUV' },
-  { value: 5, label: 'Coupe' },
-  { value: 6, label: 'Kabriolet' },
-  { value: 7, label: 'Van' },
+  { value: 0, label: 'Hatchback' },
+  { value: 1, label: 'Sedan' },
+  { value: 2, label: 'Kombi' },
+  { value: 3, label: 'SUV' },
+  { value: 4, label: 'Roadster' },
 ];
 
 function labelOf(options: Option[], value: number): string {

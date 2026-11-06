@@ -1,53 +1,34 @@
+import axios from 'axios';
 import type { Car, NewCar } from '../models/Car';
+import { api } from './api';
 
-const carsUrl = 'http://localhost:3000/cars';
-
-async function ensureSuccess(response: Response) {
-  if (!response.ok) {
-    throw new Error(`Request failed. Status: ${response.status}`);
-  }
+function normalizeCar(car: Car): Car {
+  return { ...car, productionDate: car.productionDate.slice(0, 10) };
 }
 
 export async function getCars(signal?: AbortSignal): Promise<Car[]> {
-  const response = await fetch(carsUrl, { signal });
-  await ensureSuccess(response);
-  return await response.json();
+  const response = await api.get<Car[]>('/cars', { signal });
+  return response.data.map(normalizeCar);
 }
 
 export async function getCarById(id: string, signal?: AbortSignal): Promise<Car> {
-  const response = await fetch(`${carsUrl}/${id}`, { signal });
-  await ensureSuccess(response);
-  return await response.json();
+  const response = await api.get<Car>(`/cars/${id}`, { signal });
+  return normalizeCar(response.data);
 }
 
 export async function createCar(car: NewCar): Promise<Car> {
-  const response = await fetch(carsUrl, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(car),
-  });
-
-  await ensureSuccess(response);
-  return await response.json();
+  const response = await api.post<Car>('/cars', car);
+  return normalizeCar(response.data);
 }
 
-export async function updateCar(id: string, car: NewCar): Promise<Car> {
-  const response = await fetch(`${carsUrl}/${id}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(car),
-  });
-
-  await ensureSuccess(response);
-  return await response.json();
+export async function updateCar(id: string, car: NewCar): Promise<void> {
+  await api.put(`/cars/${id}`, car);
 }
 
 export async function deleteCar(id: string): Promise<void> {
-  const response = await fetch(`${carsUrl}/${id}`, { method: 'DELETE' });
-
-  await ensureSuccess(response);
+  await api.delete(`/cars/${id}`);
 }
 
 export function isAbortError(error: unknown): boolean {
-  return error instanceof DOMException && error.name === 'AbortError';
+  return axios.isCancel(error);
 }

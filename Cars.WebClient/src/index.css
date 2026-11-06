@@ -14,6 +14,7 @@ header {
 /* Tylko układ – przyciski i linki w jednym rzędzie, wyrównane i z odstępem */
 nav,
 .page-header,
+.filters,
 .actions,
 .car-item {
   display: flex;

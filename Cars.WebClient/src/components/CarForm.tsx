@@ -57,11 +57,14 @@ function toNewCar(values: CarFormValues): NewCar {
 function validate(car: NewCar): string | null {
   if (!car.brand) return 'Podaj markę.';
   if (!car.model) return 'Podaj model.';
-  if (!Number.isInteger(car.doorsNumber) || car.doorsNumber < 1) return 'Liczba drzwi musi być dodatnią liczbą całkowitą.';
-  if (!(car.luggageCapacity >= 0)) return 'Pojemność bagażnika nie może być ujemna.';
-  if (!(car.engineCapacity >= 0)) return 'Pojemność silnika nie może być ujemna.';
+  if (car.brand.length > 50) return 'Marka nie może być dłuższa niż 50 znaków.';
+  if (car.model.length > 50) return 'Model nie może być dłuższy niż 50 znaków.';
+  if (!Number.isInteger(car.doorsNumber) || car.doorsNumber < 2 || car.doorsNumber > 5) return 'Liczba drzwi musi być liczbą całkowitą od 2 do 5.';
+  if (!Number.isInteger(car.luggageCapacity) || car.luggageCapacity < 0) return 'Pojemność bagażnika musi być nieujemną liczbą całkowitą.';
+  if (!Number.isInteger(car.engineCapacity) || car.engineCapacity <= 0) return 'Pojemność silnika musi być dodatnią liczbą całkowitą.';
   if (!car.productionDate) return 'Podaj datę produkcji.';
-  if (!(car.averageFuelConsumption >= 0)) return 'Średnie spalanie nie może być ujemne.';
+  if (car.productionDate > new Date().toISOString().slice(0, 10)) return 'Data produkcji nie może być z przyszłości.';
+  if (!(car.averageFuelConsumption > 0)) return 'Średnie spalanie musi być większe od 0.';
   return null;
 }
 
@@ -117,7 +120,7 @@ export default function CarForm({ initialValues, submitLabel, onSubmit }: CarFor
 
       <label>
         Liczba drzwi
-        <input type="number" name="doorsNumber" min={1} step={1} value={values.doorsNumber} onChange={handleChange} />
+        <input type="number" name="doorsNumber" min={2} max={5} step={1} value={values.doorsNumber} onChange={handleChange} />
       </label>
 
       <label>

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router';
+import FavoriteButton from '../components/FavoriteButton';
 import type { Car } from '../models/Car';
 import { bodyTypeLabel, fuelTypeLabel } from '../models/carOptions';
 import { getCarById, isAbortError } from '../services/carService';
@@ -60,6 +61,7 @@ export default function CarDetailsPage() {
       <div className="actions">
         {backLink}
         <Link to={`/cars/${car.id}/edit`} className="btn primary">Edytuj</Link>
+        <FavoriteButton carId={car.id} />
       </div>
     </section>
   );
