@@ -22,7 +22,7 @@ builder.Services.AddCors(a =>
         p
             .AllowAnyMethod()
             .AllowAnyHeader()
-            .WithOrigins("https://localhost:7123");
+            .WithOrigins("https://localhost:7123", "http://localhost:5173");
     });
 });
 
