@@ -16,7 +16,7 @@ public class Delete
 
         public async Task<bool> Handle(Command request, CancellationToken cancellationToken)
         {
-            var car = await _context.Cars.FindAsync(request.Id, cancellationToken);
+            var car = await _context.Cars.FindAsync([request.Id], cancellationToken);
 
             if (car is null)
             {

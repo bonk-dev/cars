@@ -19,7 +19,7 @@ public class Edit
 
         public async Task<bool> Handle(Command request, CancellationToken cancellationToken)
         {
-            var car = await _context.Cars.FindAsync(request.Id, cancellationToken);
+            var car = await _context.Cars.FindAsync([request.Id], cancellationToken: cancellationToken);
 
             if (car is null)
             {
