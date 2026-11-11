@@ -4,6 +4,7 @@ import FavoriteButton from '../components/FavoriteButton';
 import type { Car } from '../models/Car';
 import { deleteCar, getCars, isAbortError } from '../services/carService';
 import { useCarsUiStore } from '../stores/useCarsUiStore';
+import { useAuthStore } from '../stores/useAuthStore';
 
 export default function CarsPage() {
   const [cars, setCars] = useState<Car[]>([]);
@@ -11,13 +12,16 @@ export default function CarsPage() {
   const [error, setError] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
-  const searchText = useCarsUiStore((state) => state.searchText);
-  const showOnlyFavorites = useCarsUiStore((state) => state.showOnlyFavorites);
-  const favoriteIds = useCarsUiStore((state) => state.favoriteIds);
-  const setSearchText = useCarsUiStore((state) => state.setSearchText);
-  const setShowOnlyFavorites = useCarsUiStore((state) => state.setShowOnlyFavorites);
+  const user = useAuthStore((state) => state.user);
+  const isAdmin = user?.roles.includes('Admin') ?? false;
+
+  const searchTerm = useCarsUiStore((state) => state.searchTerm);
+  const showFavoritesOnly = useCarsUiStore((state) => state.showFavoritesOnly);
+  const setSearchTerm = useCarsUiStore((state) => state.setSearchTerm);
+  const setShowFavoritesOnly = useCarsUiStore((state) => state.setShowFavoritesOnly);
   const removeFavorite = useCarsUiStore((state) => state.removeFavorite);
-  const syncFavorites = useCarsUiStore((state) => state.syncFavorites);
+  const favoriteCarIdsByUser = useCarsUiStore((state) => state.favoriteCarIdsByUser);
+  const favoriteCarIds = user ? (favoriteCarIdsByUser[user.id] ?? []) : [];
 
   useEffect(() => {
     const controller = new AbortController();
@@ -25,7 +29,6 @@ export default function CarsPage() {
     getCars(controller.signal)
       .then((data) => {
         setCars(data);
-        syncFavorites(data.map((car) => car.id));
       })
       .catch((err) => {
         if (isAbortError(err)) return;
@@ -36,7 +39,7 @@ export default function CarsPage() {
       });
 
     return () => controller.abort();
-  }, [syncFavorites]);
+  }, []);
 
   async function handleDelete(car: Car) {
     const confirmed = window.confirm(
@@ -48,7 +51,9 @@ export default function CarsPage() {
     try {
       await deleteCar(car.id);
       setCars((prev) => prev.filter((c) => c.id !== car.id));
-      removeFavorite(car.id);
+      if (user) {
+        removeFavorite(user.id, car.id);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Nie udało się usunąć samochodu.');
     } finally {
@@ -58,10 +63,10 @@ export default function CarsPage() {
 
   if (isLoading) return <p className="message">Ładowanie listy...</p>;
 
-  const query = searchText.trim().toLowerCase();
+  const query = searchTerm.trim().toLowerCase();
   const visibleCars = cars.filter((car) => {
     const matchesSearch = `${car.brand} ${car.model}`.toLowerCase().includes(query);
-    const matchesFavorites = !showOnlyFavorites || favoriteIds.includes(car.id);
+    const matchesFavorites = !showFavoritesOnly || favoriteCarIds.includes(car.id);
     return matchesSearch && matchesFavorites;
   });
 
@@ -77,14 +82,14 @@ export default function CarsPage() {
           type="search"
           placeholder="Szukaj po marce i modelu"
           aria-label="Szukaj po marce i modelu"
-          value={searchText}
-          onChange={(event) => setSearchText(event.target.value)}
+          value={searchTerm}
+          onChange={(event) => setSearchTerm(event.target.value)}
         />
         <label>
           <input
             type="checkbox"
-            checked={showOnlyFavorites}
-            onChange={(event) => setShowOnlyFavorites(event.target.checked)}
+            checked={showFavoritesOnly}
+            onChange={(event) => setShowFavoritesOnly(event.target.checked)}
           />
           {' '}Tylko ulubione
         </label>
@@ -111,14 +116,17 @@ export default function CarsPage() {
                 <FavoriteButton carId={car.id} />
                 <Link to={`/cars/${car.id}`} className="btn">Szczegóły</Link>
                 <Link to={`/cars/${car.id}/edit`} className="btn">Edytuj</Link>
-                <button
-                  type="button"
-                  className="btn danger"
-                  onClick={() => handleDelete(car)}
-                  disabled={deletingId === car.id}
-                >
-                  {deletingId === car.id ? 'Usuwanie...' : 'Usuń'}
-                </button>
+
+                {isAdmin && (
+                  <button
+                    type="button"
+                    className="btn danger"
+                    onClick={() => handleDelete(car)}
+                    disabled={deletingId === car.id}
+                  >
+                    {deletingId === car.id ? 'Usuwanie...' : 'Usuń'}
+                  </button>
+                )}
               </span>
             </li>
           ))}
