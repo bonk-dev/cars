@@ -71,6 +71,7 @@ nav,
   padding: 0.3rem;
 }
 
-.error {
+.error,
+.error-message {
   color: #b00;
 }
