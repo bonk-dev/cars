@@ -19,6 +19,7 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.WebHost.UseStaticWebAssets();
 
 builder.Services.AddCors(a =>
 {
@@ -102,6 +103,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
 
 app
     .UseAuthentication()
@@ -118,7 +120,7 @@ await context.Database.MigrateAsync();
 var userManager = services.GetRequiredService<UserManager<AppUser>>();
 var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
 await IdentitySeed.SeedAsync(userManager, roleManager);
-
 await Seed.SeedData(context);
+await FeatureSeed.SeedAsync(context);
 
 app.Run();
