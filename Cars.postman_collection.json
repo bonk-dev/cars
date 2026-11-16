@@ -141,6 +141,88 @@
             }
           },
           "response": []
+        },
+        {
+          "name": "Add feature to car",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"featureIds\": [\n        \"83de8440-e751-4466-aad2-be7cbc800c7a\",\n        \"1769858c-1d08-4735-9436-929ea52bf2a9\"\n    ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/cars/{{carId}}/features",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "cars",
+                "{{carId}}",
+                "features"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Upload photo",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": [
+                    "/home/bonk/Buda/Semestr5/Aplikacje_webowe_i_sieciowe/porsche.jpg"
+                  ]
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/cars/{{carId}}/photos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "cars",
+                "{{carId}}",
+                "photos"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete car photo",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/cars/{{carId}}/photos/{{photoId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "cars",
+                "{{carId}}",
+                "photos",
+                "{{photoId}}"
+              ]
+            }
+          },
+          "response": []
         }
       ]
     },
@@ -182,7 +264,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"email\": \"student1@test.pl\",\n    \"password\": \"Student123\"\n}",
+              "raw": "{\n    \"email\": \"admin@cars.internal\",\n    \"password\": \"Admin123!\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -210,7 +292,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"email\": \"student1@test.pl\",\n    \"password\": \"NoweHaslo123\"\n}",
+              "raw": "{\n    \"email\": \"student1@test.pl\",\n    \"password\": \"Student123\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -237,7 +319,7 @@
             "method": "POST",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/account/confirm-email?userId&token",
+              "raw": "{{baseUrl}}/api/account/confirm-email?userId=384939da-2979-43ce-9e5b-2a5d126079a4&token=Q2ZESjhKL0Z5ZUl2VjMxQnQzenZRaU9wVDIwZW84S0phSEM5TXJmUExxTUJBVzVNUXlHeVFZTUNNdXhVaEhOZ0trTm81Q1hBV0NIZDdVRkU0YzIwQ3ZWTFZ0YXZTc1l6VTN0SEJEMzBTV3AxS080Q0k4VUVwcWtieHVzSnlEOTJUZDErVnNsZncyMHlUMWZNYzBNQ242ZmdkbEJ2c2l2VEc3S0tnN1I0UUtDZlZDZFVsbGFwcnVSaGJmNnRNeEsyVzJia3BjMFJzMXZDRks3RWYwUUZsdVZJYjcvUy9laStpZ2labS9aUXpkSjVWTGRZN3gweTVIeDMzcWdLY1Fqbnk4Kzl6Zz09",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -249,11 +331,11 @@
               "query": [
                 {
                   "key": "userId",
-                  "value": ""
+                  "value": "384939da-2979-43ce-9e5b-2a5d126079a4"
                 },
                 {
                   "key": "token",
-                  "value": ""
+                  "value": "Q2ZESjhKL0Z5ZUl2VjMxQnQzenZRaU9wVDIwZW84S0phSEM5TXJmUExxTUJBVzVNUXlHeVFZTUNNdXhVaEhOZ0trTm81Q1hBV0NIZDdVRkU0YzIwQ3ZWTFZ0YXZTc1l6VTN0SEJEMzBTV3AxS080Q0k4VUVwcWtieHVzSnlEOTJUZDErVnNsZncyMHlUMWZNYzBNQ242ZmdkbEJ2c2l2VEc3S0tnN1I0UUtDZlZDZFVsbGFwcnVSaGJmNnRNeEsyVzJia3BjMFJzMXZDRks3RWYwUUZsdVZJYjcvUy9laStpZ2labS9aUXpkSjVWTGRZN3gweTVIeDMzcWdLY1Fqbnk4Kzl6Zz09"
                 }
               ]
             }
@@ -294,10 +376,50 @@
         {
           "name": "Reset password",
           "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"student1@test.pl\",\n    \"token\": \"Q2ZESjhKL0Z5ZUl2VjMxQnQzenZRaU9wVDIxcmw5Vm8xaDFFRkhSSUlhMVR4K2V4M2J0YldOdzVEQmUrSEQzd1ZqaFVmSkY4c3VMTDl6Z3MrK3RYUk55RlQ1TGwvblYza0E5VEc5c1dMUXNNTDVpR3UvQXY4NzhlUTdQWWZQajFFV2ZMb0F0ZVZWZ29iSzIwaFZUYVY0TTJiTlBROEJ3b3RqSzAzRU8vdXF5cjBpV0dIeFZ1aERCajRROW5QczhaVUNjVWhXUlpkZGF2S2VKVDBBODBWUGdRK0EwdUt1ZWhXVFd2cDJVNVFkTTVodHZx\",\n    \"newPassword\": \"NoweHaslo123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/account/reset-password",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "account",
+                "reset-password"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Features",
+      "item": [
+        {
+          "name": "Get all available features",
+          "request": {
             "method": "GET",
             "header": [],
             "url": {
-              "raw": ""
+              "raw": "{{baseUrl}}/api/features",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "features"
+              ]
             }
           },
           "response": []
@@ -327,6 +449,10 @@
     {
       "key": "carsToken",
       "secret": true
+    },
+    {
+      "key": "photoId",
+      "value": ""
     }
   ]
 }
