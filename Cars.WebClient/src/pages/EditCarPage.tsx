@@ -1,57 +1,124 @@
-import { useEffect, useState } from 'react';
+import { useMemo } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Link, useNavigate, useParams } from 'react-router';
+
 import CarForm from '../components/CarForm';
-import type { Car, NewCar } from '../models/Car';
-import { getCarById, isAbortError, updateCar } from '../services/carService';
+import type { CarFormValues } from '../models/CarFormValues';
+import { getCarById, updateCar } from '../services/carService';
+import { queryKeys } from '../queries/queryKeys';
 
 export default function EditCarPage() {
+  // ========================================================
+  // ROUTING
+  // ========================================================
+
+  // useParams() zwraca string | undefined. Query i tak nie zostanie
+  // wykonane, jeśli id nie istnieje (enabled: Boolean(id)).
   const { id } = useParams();
+  const carId = id ?? '';
   const navigate = useNavigate();
-  const [car, setCar] = useState<Car | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (!id) return;
-    const controller = new AbortController();
+  const queryClient = useQueryClient();
 
-    getCarById(id, controller.signal)
-      .then((data) => setCar(data))
-      .catch((err) => {
-        if (isAbortError(err)) return;
-        setError(err instanceof Error ? err.message : 'Nie udało się pobrać samochodu.');
-      })
-      .finally(() => {
-        if (!controller.signal.aborted) setIsLoading(false);
-      });
+  // ========================================================
+  // TANSTACK QUERY -- POBRANIE SAMOCHODU
+  // ========================================================
 
-    return () => controller.abort();
-  }, [id]);
+  const {
+    data: car,
+    isPending: isCarPending,
+    isError: isCarError,
+    error: carError,
+  } = useQuery({
+    // Każdy samochód ma osobny wpis w cache: ['car', 'guid-samochodu'].
+    queryKey: queryKeys.car(carId),
+    // TanStack Query przekazuje AbortSignal – nie tworzymy własnego AbortController.
+    queryFn: ({ signal }) => getCarById(carId, signal),
+    enabled: Boolean(id),
+  });
 
-  async function handleSubmit(updated: NewCar) {
-    if (!id) return;
-    await updateCar(id, updated);
-    navigate(`/cars/${id}`);
-  }
+  // Dane z API -> wartości formularza. CarForm wywoła reset(), gdy się pojawią.
+  const initialValues = useMemo<CarFormValues | undefined>(() => {
+    if (!car) {
+      return undefined;
+    }
 
-  if (isLoading) return <p className="message">Ładowanie...</p>;
+    return {
+      brand: car.brand,
+      model: car.model,
+      doorsNumber: car.doorsNumber,
+      luggageCapacity: car.luggageCapacity,
+      engineCapacity: car.engineCapacity,
+      fuelType: car.fuelType,
+      // input type="date" oczekuje yyyy-MM-dd.
+      productionDate: car.productionDate.substring(0, 10),
+      averageFuelConsumption: car.averageFuelConsumption,
+      bodyType: car.bodyType,
+      // Backend zwraca features: [{ id, name }], formularz potrzebuje tylko id.
+      featureIds: car.features.map((feature) => feature.id),
+    };
+  }, [car]);
 
-  if (error || !car) {
+  // ========================================================
+  // TANSTACK QUERY -- AKTUALIZACJA SAMOCHODU
+  // ========================================================
+
+  const updateMutation = useMutation({
+    mutationFn: (values: CarFormValues) => updateCar(carId, values),
+
+    onSuccess: () => {
+      // Lista samochodów oraz szczegóły auta mogą zawierać stare dane.
+      queryClient.invalidateQueries({ queryKey: queryKeys.cars });
+      queryClient.invalidateQueries({ queryKey: queryKeys.car(carId) });
+
+      navigate(`/cars/${carId}`);
+    },
+  });
+
+  const backLink = (
+    <Link className="btn" to="/cars">
+      Wróć do listy
+    </Link>
+  );
+
+  if (!id) {
     return (
       <section>
-        <p className="message error">{error ?? 'Nie znaleziono samochodu.'}</p>
-        <Link to="/cars" className="btn">← Powrót do listy</Link>
+        <h1>Błąd</h1>
+        <p className="alert alert-danger">Brak identyfikatora samochodu.</p>
+        {backLink}
       </section>
     );
   }
 
-  const { id: _id, ...initialValues } = car;
+  if (isCarPending) {
+    return <p>Ładowanie samochodu...</p>;
+  }
+
+  if (isCarError) {
+    return (
+      <section>
+        <h1>Błąd</h1>
+        <p className="alert alert-danger">{carError.message}</p>
+        {backLink}
+      </section>
+    );
+  }
 
   return (
     <section>
-      <h1>Edytuj: {car.brand} {car.model}</h1>
-      <CarForm key={car.id} initialValues={initialValues} submitLabel="Zapisz zmiany" onSubmit={handleSubmit} />
-      <p><Link to={`/cars/${car.id}`}>← Anuluj i wróć do szczegółów</Link></p>
+      <h1>
+        Edytuj: {car.brand} {car.model}
+      </h1>
+
+      <CarForm
+        initialValues={initialValues}
+        submitLabel="Zapisz zmiany"
+        isSubmitting={updateMutation.isPending}
+        error={updateMutation.isError ? updateMutation.error.message : null}
+        cancelTo={`/cars/${carId}`}
+        onSubmit={(values) => updateMutation.mutate(values)}
+      />
     </section>
   );
 }
