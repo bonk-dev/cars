@@ -49,6 +49,7 @@ export default function RegisterPage() {
         <label>
           Nazwa użytkownika
           <input
+            type="text"
             name="userName"
             value={formData.userName}
             onChange={handleChange}

@@ -27,8 +27,6 @@ api.interceptors.response.use(undefined, (error) => {
 
     if (validationErrors) {
       error.message = Object.values(validationErrors).flat().join(" ");
-    } else if (error.response?.status === 404) {
-      error.message = "Nie znaleziono samochodu.";
     } else if (!error.response && !axios.isCancel(error)) {
       error.message = "Brak połączenia z serwerem.";
     }
